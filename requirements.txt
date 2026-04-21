@@ -1,0 +1,44 @@
+# ============================================================
+# Talk-To-Gemini — Requirements
+# ============================================================
+# This project is a single-file HTML/CSS/JavaScript application.
+# It has NO Python or Node.js runtime dependencies.
+#
+# All runtime dependencies are loaded from CDNs at run time and
+# are listed below for reference.
+# ============================================================
+
+# ------------------------------------------------------------
+# Browser requirement
+# ------------------------------------------------------------
+# A modern web browser with ES2017+ (async/await) support:
+#   - Google Chrome  >= 90
+#   - Mozilla Firefox >= 88
+#   - Microsoft Edge  >= 90
+#   - Apple Safari    >= 14
+
+# ------------------------------------------------------------
+# External CDN resources (loaded automatically by Talk.html)
+# ------------------------------------------------------------
+# Google Fonts
+#   https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800
+#   https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500
+
+# ------------------------------------------------------------
+# Google Generative Language API
+# ------------------------------------------------------------
+# Endpoint : https://generativelanguage.googleapis.com/v1beta/
+# Model    : gemma-3-1b-it
+# Auth     : Google AI Studio API key (free tier available)
+#            https://aistudio.google.com
+#
+# Required scopes / permissions:
+#   - generativelanguage.googleapis.com enabled on your Google project
+#   - API key with access to the Generative Language API
+
+# ------------------------------------------------------------
+# Network
+# ------------------------------------------------------------
+# An active internet connection is required to:
+#   1. Load Google Fonts (typography)
+#   2. Call the Generative Language API (chat responses)
