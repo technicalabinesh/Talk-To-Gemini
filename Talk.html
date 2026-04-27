@@ -4,34 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gemini AI Chat</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --surface2: #1a1a26;
-    --border: rgba(255,255,255,0.06);
-    --border-bright: rgba(255,255,255,0.12);
-    --text: #f0f0f8;
-    --text-muted: #666680;
-    --text-dim: #3a3a55;
-    --gem-blue: #4285f4;
-    --gem-red: #ea4335;
-    --gem-yellow: #fbbc05;
-    --gem-green: #34a853;
-    --accent: #8b5cf6;
-    --accent-bright: #a78bfa;
-    --accent-glow: rgba(139,92,246,0.15);
-    --user-bg: #1e1b33;
-    --user-border: rgba(139,92,246,0.3);
-    --ai-bg: #111820;
-    --ai-border: rgba(66,133,244,0.2);
+    --bg: #05050d;
+    --surface: #0c0c1a;
+    --surface2: #13132a;
+    --surface3: #1a1a38;
+    --border: rgba(255,255,255,0.05);
+    --border-mid: rgba(255,255,255,0.09);
+    --border-bright: rgba(255,255,255,0.14);
+    --text: #eeeeff;
+    --text-muted: #6b6b9a;
+    --text-dim: #2e2e55;
+    --blue: #4f8ef7;
+    --red: #f75f4f;
+    --yellow: #f7c94f;
+    --green: #4ff7a0;
+    --purple: #9b7ef7;
+    --pink: #f77eb8;
+    --accent: #7c5dfa;
+    --accent-bright: #a991fb;
+    --accent-glow: rgba(124,93,250,0.18);
+    --user-bg: #12102b;
+    --user-border: rgba(124,93,250,0.25);
+    --ai-bg: #0a1022;
+    --ai-border: rgba(79,142,247,0.18);
+    --glow-blue: rgba(79,142,247,0.12);
+    --glow-purple: rgba(124,93,250,0.12);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Grotesk', sans-serif;
     background: var(--bg);
     color: var(--text);
     height: 100vh;
@@ -41,141 +47,223 @@
     position: relative;
   }
 
-  /* Animated background grid */
+  /* ─── Animated starfield background ─── */
+  .starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur) ease-in-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: var(--brightness); transform: scale(1); }
+  }
+
+  /* Dot grid */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image:
-      linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
+    background-image: radial-gradient(circle, rgba(124,93,250,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
     z-index: 0;
     pointer-events: none;
   }
 
-  /* Ambient glow orbs */
-  .orb {
+  /* Ambient blobs */
+  .blob {
     position: fixed;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(100px);
     pointer-events: none;
     z-index: 0;
-    animation: drift 12s ease-in-out infinite alternate;
   }
-  .orb-1 {
+  .blob-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(79,142,247,0.09), transparent 70%);
+    top: -150px; left: -150px;
+    animation: blobDrift 18s ease-in-out infinite alternate;
+  }
+  .blob-2 {
     width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(66,133,244,0.12), transparent 70%);
-    top: -100px; left: -100px;
+    background: radial-gradient(circle, rgba(124,93,250,0.09), transparent 70%);
+    bottom: -100px; right: -100px;
+    animation: blobDrift 14s ease-in-out infinite alternate-reverse;
   }
-  .orb-2 {
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, rgba(139,92,246,0.10), transparent 70%);
-    bottom: 50px; right: -50px;
-    animation-delay: -6s;
+  .blob-3 {
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, rgba(79,247,160,0.05), transparent 70%);
+    top: 40%; right: 20%;
+    animation: blobDrift 20s ease-in-out infinite alternate;
   }
-  .orb-3 {
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(52,168,83,0.06), transparent 70%);
-    top: 50%; left: 50%;
-    animation-delay: -3s;
-  }
-
-  @keyframes drift {
+  @keyframes blobDrift {
     0% { transform: translate(0,0) scale(1); }
-    100% { transform: translate(30px, 20px) scale(1.1); }
+    100% { transform: translate(40px,30px) scale(1.12); }
   }
 
-  /* Header */
+  /* ─── ANIMATED GEM LOGO ─── */
+  .gem-logo-wrap {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  .gem-canvas {
+    width: 44px;
+    height: 44px;
+    display: block;
+  }
+
+  .header-google-g {
+    position: absolute;
+    inset: 6px;
+    width: calc(100% - 12px);
+    height: calc(100% - 12px);
+    z-index: 2;
+    filter: drop-shadow(0 0 6px rgba(66,133,244,0.4));
+  }
+
+  /* Rotating ring around gem */
+  .gem-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    background: linear-gradient(var(--bg), var(--bg)) padding-box,
+                conic-gradient(from 0deg, var(--blue), var(--purple), var(--green), var(--red), var(--blue)) border-box;
+    animation: ringRotate 4s linear infinite;
+  }
+  @keyframes ringRotate {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Pulsing glow behind gem */
+  .gem-glow {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,93,250,0.35), transparent 65%);
+    animation: glowPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.5; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* ─── HEADER ─── */
   header {
     position: relative;
     z-index: 10;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 28px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(10,10,15,0.8);
-    backdrop-filter: blur(20px);
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--border-mid);
+    background: rgba(5,5,13,0.85);
+    backdrop-filter: blur(24px);
     flex-shrink: 0;
   }
 
   .logo {
     display: flex;
     align-items: center;
-    gap: 12px;
-  }
-
-  .gem-icon {
-    width: 36px;
-    height: 36px;
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .gem-icon svg {
-    width: 100%;
-    height: 100%;
-    animation: gemSpin 8s linear infinite;
-  }
-
-  @keyframes gemSpin {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
+    gap: 14px;
   }
 
   .logo-text {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    line-height: 1;
   }
 
-  .logo-text span {
-    background: linear-gradient(135deg, var(--gem-blue), var(--accent-bright));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+  .logo-text .g { color: var(--blue); }
+  .logo-text .e1 { color: var(--red); }
+  .logo-text .m { color: var(--yellow); }
+  .logo-text .i { color: var(--blue); }
+  .logo-text .n { color: var(--green); }
+  .logo-text .i2 { color: var(--red); }
 
-  .model-badge {
+  .logo-sub {
     font-size: 10px;
-    font-weight: 500;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .model-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     background: var(--surface2);
     border: 1px solid var(--border-bright);
-    color: var(--text-muted);
-    padding: 3px 8px;
     border-radius: 20px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    padding: 4px 12px 4px 8px;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
   }
+
+  .model-chip-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: conic-gradient(var(--blue) 0%, var(--purple) 50%, var(--green) 100%);
+    animation: chipSpin 3s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes chipSpin { to { filter: hue-rotate(360deg); } }
 
   .header-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
-  .status-dot {
-    width: 8px; height: 8px;
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+
+  .status-led {
+    width: 7px; height: 7px;
     border-radius: 50%;
-    background: var(--gem-green);
-    box-shadow: 0 0 8px var(--gem-green);
-    animation: pulse 2s ease-in-out infinite;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+    transition: background 0.4s, box-shadow 0.4s;
+    animation: ledPulse 2s ease-in-out infinite;
+  }
+  @keyframes ledPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
   }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(0.85); }
-  }
-
-  .status-text {
+  .status-label {
     font-size: 11px;
     color: var(--text-muted);
-    letter-spacing: 0.5px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.3s;
   }
 
-  /* API Key Setup */
+  /* ─── SETUP SCREEN ─── */
   #setup-screen {
     position: relative;
     z-index: 5;
@@ -188,10 +276,10 @@
 
   .setup-card {
     background: var(--surface);
-    border: 1px solid var(--border-bright);
-    border-radius: 20px;
-    padding: 48px;
-    max-width: 480px;
+    border: 1px solid var(--border-mid);
+    border-radius: 24px;
+    padding: 52px 48px 44px;
+    max-width: 460px;
     width: 100%;
     text-align: center;
     position: relative;
@@ -202,114 +290,215 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--gem-blue), var(--accent), var(--gem-green));
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blue) 20%, var(--purple) 50%, var(--green) 80%, transparent);
   }
 
-  .setup-gem {
-    width: 72px;
-    height: 72px;
-    margin: 0 auto 24px;
+  .setup-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(124,93,250,0.07), transparent 60%);
+    pointer-events: none;
   }
 
-  .setup-gem svg { width: 100%; height: 100%; }
+  /* Big animated gem for setup */
+  .setup-gem-wrap {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .setup-gem-orbit {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background: linear-gradient(var(--surface), var(--surface)) padding-box,
+                conic-gradient(from 0deg, var(--blue) 0%, var(--purple) 25%, var(--green) 50%, var(--red) 75%, var(--blue) 100%) border-box;
+    animation: ringRotate 3s linear infinite;
+  }
+
+  .setup-gem-orbit-2 {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 1px dashed rgba(124,93,250,0.2);
+    animation: ringRotate 8s linear infinite reverse;
+  }
+
+  .setup-gem-glow {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,93,250,0.3), transparent 65%);
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  /* Google G logo inside setup ring */
+  .google-g-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    animation: gFloat 3s ease-in-out infinite;
+  }
+
+  .google-g-svg {
+    width: 68px;
+    height: 68px;
+    filter: drop-shadow(0 0 12px rgba(66,133,244,0.5)) drop-shadow(0 0 24px rgba(234,67,53,0.3));
+    animation: gPulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes gFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-5px); }
+  }
+
+  @keyframes gPulse {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(66,133,244,0.5)) drop-shadow(0 0 20px rgba(234,67,53,0.3)); }
+    33%       { filter: drop-shadow(0 0 14px rgba(52,168,83,0.6))  drop-shadow(0 0 24px rgba(251,188,5,0.35)); }
+    66%       { filter: drop-shadow(0 0 14px rgba(234,67,53,0.6))  drop-shadow(0 0 24px rgba(66,133,244,0.4)); }
+  }
 
   .setup-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 28px;
-    font-weight: 800;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, var(--text), var(--accent-bright));
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--text) 40%, var(--accent-bright));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    position: relative;
+    z-index: 1;
   }
 
   .setup-subtitle {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--text-muted);
-    margin-bottom: 32px;
-    line-height: 1.6;
+    margin-bottom: 36px;
+    line-height: 1.65;
+    position: relative;
+    z-index: 1;
   }
 
   .input-group {
     position: relative;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
+    z-index: 1;
   }
 
   .input-group label {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 11px;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
     margin-bottom: 8px;
     text-align: left;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .key-input {
     width: 100%;
     background: var(--surface2);
     border: 1px solid var(--border-bright);
-    border-radius: 10px;
-    padding: 14px 16px;
-    font-family: 'DM Mono', monospace;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
     color: var(--text);
     outline: none;
-    transition: all 0.2s;
+    transition: all 0.25s;
   }
 
   .key-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
+    box-shadow: 0 0 0 3px var(--accent-glow), 0 4px 20px rgba(124,93,250,0.1);
   }
 
   .key-input::placeholder { color: var(--text-dim); }
 
   .btn-start {
     width: 100%;
-    background: linear-gradient(135deg, var(--accent), var(--gem-blue));
+    position: relative;
+    background: none;
     border: none;
-    border-radius: 10px;
-    padding: 14px;
-    font-family: 'Syne', sans-serif;
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 1;
+    margin-top: 4px;
+  }
+
+  .btn-start-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--blue) 100%);
+    border-radius: 12px;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 15px;
     font-weight: 700;
     color: white;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
+    transition: all 0.25s;
     position: relative;
     overflow: hidden;
   }
 
-  .btn-start::before {
+  .btn-start-inner::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-    opacity: 0;
-    transition: opacity 0.2s;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.4s;
   }
 
-  .btn-start:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(139,92,246,0.3); }
-  .btn-start:hover::before { opacity: 1; }
-  .btn-start:active { transform: translateY(0); }
+  .btn-start:hover .btn-start-inner { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(124,93,250,0.35); }
+  .btn-start:hover .btn-start-inner::before { left: 100%; }
+  .btn-start:active .btn-start-inner { transform: translateY(0); }
+
+  .btn-icon {
+    width: 18px; height: 18px;
+    animation: btnIconSpin 4s linear infinite;
+  }
+  @keyframes btnIconSpin {
+    0%, 100% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(180deg); }
+  }
 
   .setup-hint {
-    margin-top: 20px;
-    font-size: 11px;
+    margin-top: 22px;
+    font-size: 11.5px;
     color: var(--text-dim);
-    line-height: 1.7;
+    line-height: 1.8;
+    position: relative;
+    z-index: 1;
   }
 
   .setup-hint a {
-    color: var(--gem-blue);
+    color: var(--blue);
     text-decoration: none;
+    transition: color 0.2s;
   }
+  .setup-hint a:hover { color: var(--accent-bright); }
 
-  /* Chat Interface */
+  /* ─── CHAT SCREEN ─── */
   #chat-screen {
     display: none;
     flex: 1;
@@ -319,75 +508,81 @@
     overflow: hidden;
   }
 
-  #chat-screen.active {
-    display: flex;
-  }
+  #chat-screen.active { display: flex; }
 
-  /* Messages area */
+  /* Messages */
   #messages {
     flex: 1;
     overflow-y: auto;
-    padding: 24px 0;
+    padding: 28px 0;
     scroll-behavior: smooth;
   }
 
-  #messages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar { width: 3px; }
   #messages::-webkit-scrollbar-track { background: transparent; }
   #messages::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 2px; }
 
   .message-wrapper {
-    max-width: 760px;
+    max-width: 780px;
     margin: 0 auto;
-    padding: 0 24px;
-    animation: fadeUp 0.3s ease;
+    padding: 0 28px;
+    animation: msgFadeUp 0.35s cubic-bezier(0.16,1,0.3,1);
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes msgFadeUp {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .message {
     display: flex;
     gap: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     align-items: flex-start;
   }
 
+  /* Mini animated avatar gem */
   .avatar {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: 'Syne', sans-serif;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .avatar-user {
-    background: linear-gradient(135deg, var(--accent), #6d28d9);
+    background: linear-gradient(135deg, var(--accent), #5b34d4);
     color: white;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(124,93,250,0.3);
   }
 
   .avatar-ai {
     background: var(--surface2);
-    border: 1px solid var(--ai-border);
+    border: 1px solid var(--border-bright);
+    border-radius: 10px;
     padding: 4px;
+    overflow: hidden;
   }
 
-  .avatar-ai svg { width: 100%; height: 100%; }
+  .avatar-ai canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 
   .bubble {
     flex: 1;
-    padding: 14px 18px;
-    border-radius: 14px;
+    padding: 16px 20px;
+    border-radius: 16px;
     font-size: 14px;
-    line-height: 1.7;
+    line-height: 1.75;
     position: relative;
   }
 
@@ -395,100 +590,172 @@
     background: var(--user-bg);
     border: 1px solid var(--user-border);
     border-top-left-radius: 4px;
-    color: var(--text);
   }
 
   .bubble-ai {
     background: var(--ai-bg);
     border: 1px solid var(--ai-border);
     border-top-left-radius: 4px;
-    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* Shimmer stripe at top of AI bubble */
+  .bubble-ai::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blue) 20%, var(--purple) 50%, var(--green) 80%, transparent);
+    opacity: 0.7;
   }
 
   .bubble-label {
     font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    margin-bottom: 6px;
-    font-weight: 500;
+    letter-spacing: 1.5px;
+    margin-bottom: 7px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .bubble-user .bubble-label { color: var(--accent-bright); }
-  .bubble-ai .bubble-label { color: var(--gem-blue); }
+  .bubble-ai .bubble-label { color: var(--blue); }
+
+  .label-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: labelBlink 2s ease-in-out infinite;
+  }
+  @keyframes labelBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
 
   .bubble p { margin-bottom: 10px; }
   .bubble p:last-child { margin-bottom: 0; }
 
   .bubble code {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1px 5px;
-    font-size: 12px;
-    font-family: 'DM Mono', monospace;
+    background: rgba(124,93,250,0.1);
+    border: 1px solid rgba(124,93,250,0.2);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 12.5px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent-bright);
   }
 
   .bubble pre {
-    background: #0d0d14;
-    border: 1px solid var(--border-bright);
-    border-radius: 8px;
-    padding: 14px;
-    margin: 10px 0;
+    background: #070712;
+    border: 1px solid var(--border-mid);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 12px 0;
     overflow-x: auto;
     font-size: 12px;
-    line-height: 1.6;
+    line-height: 1.65;
+    position: relative;
+  }
+
+  .bubble pre::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    opacity: 0.5;
   }
 
   .bubble pre code {
     background: none;
     border: none;
     padding: 0;
+    color: var(--text);
     font-size: 12px;
   }
 
-  /* Typing indicator */
+  /* Typing dots */
   .typing-indicator {
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 8px 0;
+    gap: 6px;
+    padding: 4px 0;
   }
 
   .typing-dot {
-    width: 6px; height: 6px;
+    width: 7px; height: 7px;
     border-radius: 50%;
-    background: var(--gem-blue);
-    animation: typingBounce 1.2s ease-in-out infinite;
+    animation: typeBounce 1.3s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(1) { background: var(--blue); }
+  .typing-dot:nth-child(2) { background: var(--purple); animation-delay: 0.18s; }
+  .typing-dot:nth-child(3) { background: var(--green); animation-delay: 0.36s; }
+
+  @keyframes typeBounce {
+    0%, 60%, 100% { transform: translateY(0) scale(0.8); opacity: 0.4; }
+    30% { transform: translateY(-9px) scale(1); opacity: 1; }
   }
 
-  .typing-dot:nth-child(2) { animation-delay: 0.2s; background: var(--accent); }
-  .typing-dot:nth-child(3) { animation-delay: 0.4s; background: var(--gem-green); }
-
-  @keyframes typingBounce {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-8px); opacity: 1; }
-  }
-
-  /* Welcome message */
+  /* Welcome state */
   .welcome-state {
-    max-width: 760px;
-    margin: 40px auto;
-    padding: 0 24px;
+    max-width: 780px;
+    margin: 30px auto;
+    padding: 0 28px;
     text-align: center;
   }
 
-  .welcome-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 20px;
+  /* Animated welcome gem */
+  .welcome-gem-wrap {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 26px;
+  }
+
+  .welcome-ring-outer {
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background: linear-gradient(var(--bg), var(--bg)) padding-box,
+                conic-gradient(from 0deg, var(--blue), var(--purple), var(--green), var(--red), var(--yellow), var(--blue)) border-box;
+    animation: ringRotate 4s linear infinite;
+  }
+
+  .welcome-ring-mid {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px dashed rgba(124,93,250,0.25);
+    animation: ringRotate 7s linear infinite reverse;
+  }
+
+  .welcome-gem-glow {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,93,250,0.25), transparent 65%);
+    animation: glowPulse 2.5s ease-in-out infinite;
+  }
+
+  /* Orbiting particles */
+  .orbit-particle {
+    position: absolute;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform-origin: 0 0;
   }
 
   .welcome-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 30px;
-    font-weight: 800;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
     margin-bottom: 10px;
-    background: linear-gradient(135deg, var(--text) 30%, var(--accent-bright));
+    background: linear-gradient(135deg, var(--text) 30%, var(--accent-bright) 70%, var(--blue));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -496,9 +763,10 @@
 
   .welcome-subtitle {
     color: var(--text-muted);
-    font-size: 14px;
-    margin-bottom: 36px;
-    line-height: 1.6;
+    font-size: 14.5px;
+    margin-bottom: 38px;
+    line-height: 1.65;
+    font-weight: 400;
   }
 
   .suggestions {
@@ -509,46 +777,57 @@
 
   .suggestion-card {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
+    border: 1px solid var(--border-mid);
+    border-radius: 14px;
+    padding: 16px 18px;
     text-align: left;
     cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'DM Mono', monospace;
+    transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .suggestion-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(124,93,250,0.08), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
   }
 
   .suggestion-card:hover {
-    border-color: var(--accent);
-    background: var(--surface2);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(139,92,246,0.1);
+    border-color: rgba(124,93,250,0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(124,93,250,0.12);
   }
+  .suggestion-card:hover::before { opacity: 1; }
 
   .suggestion-icon {
-    font-size: 18px;
-    margin-bottom: 8px;
+    font-size: 20px;
+    margin-bottom: 9px;
+    display: block;
   }
 
   .suggestion-text {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-muted);
-    line-height: 1.5;
+    line-height: 1.55;
+    font-weight: 400;
   }
 
   /* Input area */
   .input-area {
     flex-shrink: 0;
-    padding: 16px 24px 20px;
-    border-top: 1px solid var(--border);
-    background: rgba(10,10,15,0.9);
-    backdrop-filter: blur(20px);
+    padding: 16px 28px 22px;
+    border-top: 1px solid var(--border-mid);
+    background: rgba(5,5,13,0.92);
+    backdrop-filter: blur(24px);
   }
 
   .input-container {
-    max-width: 760px;
+    max-width: 780px;
     margin: 0 auto;
-    position: relative;
   }
 
   .input-box {
@@ -556,15 +835,27 @@
     align-items: flex-end;
     gap: 10px;
     background: var(--surface);
-    border: 1px solid var(--border-bright);
-    border-radius: 16px;
-    padding: 12px 14px;
-    transition: all 0.2s;
+    border: 1px solid var(--border-mid);
+    border-radius: 18px;
+    padding: 12px 14px 12px 18px;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .input-box::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 19px;
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    opacity: 0;
+    transition: opacity 0.25s;
+    z-index: -1;
   }
 
   .input-box:focus-within {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
+    border-color: transparent;
+    box-shadow: 0 0 0 1px var(--accent), 0 8px 30px rgba(124,93,250,0.12);
   }
 
   #chat-input {
@@ -572,95 +863,104 @@
     background: none;
     border: none;
     outline: none;
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14.5px;
     color: var(--text);
     resize: none;
-    max-height: 140px;
+    max-height: 150px;
     line-height: 1.6;
-    min-height: 22px;
+    min-height: 24px;
+    font-weight: 400;
   }
 
   #chat-input::placeholder { color: var(--text-dim); }
 
   .send-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
     border: none;
-    background: linear-gradient(135deg, var(--accent), var(--gem-blue));
+    background: linear-gradient(135deg, var(--accent), var(--blue));
     color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: all 0.2s;
-    opacity: 0.5;
+    transition: all 0.22s;
+    opacity: 0.4;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .send-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
   }
 
   .send-btn.active { opacity: 1; }
-  .send-btn:hover.active { transform: scale(1.05); box-shadow: 0 4px 12px rgba(139,92,246,0.4); }
-
-  .send-btn svg { width: 16px; height: 16px; }
+  .send-btn:hover.active { transform: scale(1.08); box-shadow: 0 5px 16px rgba(124,93,250,0.4); }
+  .send-btn:hover.active::after { opacity: 1; }
+  .send-btn svg { width: 16px; height: 16px; position: relative; z-index: 1; }
 
   .input-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 8px;
-    padding: 0 2px;
+    margin-top: 9px;
+    padding: 0 4px;
   }
 
   .input-hint {
-    font-size: 10px;
+    font-size: 10.5px;
     color: var(--text-dim);
-    letter-spacing: 0.3px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.2px;
   }
 
-  .char-count {
-    font-size: 10px;
-    color: var(--text-dim);
+  .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
-  /* Clear button */
+  .token-count {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
   .clear-btn {
     background: none;
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-family: 'DM Mono', monospace;
+    border-radius: 7px;
+    padding: 4px 12px;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
   }
 
   .clear-btn:hover {
-    border-color: var(--gem-red);
-    color: var(--gem-red);
+    border-color: rgba(247,95,79,0.4);
+    color: var(--red);
+    background: rgba(247,95,79,0.06);
   }
 
-  /* Gem colors stripe at bottom of bubbles */
-  .bubble-ai::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 100%; height: 2px;
-    background: linear-gradient(90deg, var(--gem-blue), var(--accent), var(--gem-red), var(--gem-yellow), var(--gem-green));
-    border-radius: 0 0 14px 14px;
-    opacity: 0.4;
-  }
-
-  /* Scroll to bottom button */
+  /* Scroll to bottom */
   .scroll-btn {
     position: absolute;
-    bottom: 90px;
-    right: 30px;
-    width: 36px;
-    height: 36px;
+    bottom: 100px;
+    right: 32px;
+    width: 38px;
+    height: 38px;
     background: var(--surface2);
     border: 1px solid var(--border-bright);
     border-radius: 50%;
@@ -670,9 +970,10 @@
     cursor: pointer;
     z-index: 20;
     opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.2s;
+    transform: translateY(12px);
+    transition: all 0.25s;
     pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   }
 
   .scroll-btn.visible {
@@ -681,127 +982,168 @@
     pointer-events: auto;
   }
 
+  .scroll-btn:hover { border-color: var(--accent); }
   .scroll-btn svg { width: 14px; height: 14px; color: var(--text-muted); }
 
-  /* Error toast */
+  /* Toast */
   .toast {
     position: fixed;
-    bottom: 120px;
+    bottom: 130px;
     left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: #1a0a0a;
-    border: 1px solid rgba(234,67,53,0.4);
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 12px;
-    color: var(--gem-red);
+    transform: translateX(-50%) translateY(16px);
+    background: #140a0a;
+    border: 1px solid rgba(247,95,79,0.35);
+    border-radius: 12px;
+    padding: 11px 22px;
+    font-size: 12.5px;
+    color: var(--red);
     z-index: 100;
     opacity: 0;
     transition: all 0.3s;
     pointer-events: none;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 8px 24px rgba(247,95,79,0.15);
   }
 
   .toast.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+
+  /* Streaming cursor */
+  .stream-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background: var(--blue);
+    border-radius: 1px;
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: cursorBlink 0.8s ease-in-out infinite;
+  }
+  @keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Message actions */
+  .msg-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .message-wrapper:hover .msg-actions { opacity: 1; }
+
+  .msg-action-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 9px;
+    font-size: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.18s;
+    letter-spacing: 0.3px;
+  }
+
+  .msg-action-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent-bright);
+    background: rgba(124,93,250,0.06);
+  }
 </style>
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
+  <!-- Background layers -->
+  <div class="starfield" id="starfield"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
 
   <header>
     <div class="logo">
-      <div class="gem-icon">
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="20,2 38,14 38,26 20,38 2,26 2,14" fill="none" stroke="url(#g1)" stroke-width="1.5"/>
-          <polygon points="20,2 30,14 20,20 10,14" fill="url(#g2)" opacity="0.8"/>
-          <polygon points="30,14 38,26 20,38 20,20" fill="url(#g3)" opacity="0.6"/>
-          <polygon points="10,14 20,20 20,38 2,26" fill="url(#g4)" opacity="0.7"/>
-          <polygon points="10,14 30,14 20,20" fill="url(#g5)" opacity="0.9"/>
-          <defs>
-            <linearGradient id="g1" x1="0" y1="0" x2="40" y2="40">
-              <stop offset="0%" stop-color="#4285f4"/>
-              <stop offset="50%" stop-color="#8b5cf6"/>
-              <stop offset="100%" stop-color="#34a853"/>
-            </linearGradient>
-            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#4285f4"/>
-              <stop offset="100%" stop-color="#8b5cf6"/>
-            </linearGradient>
-            <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#ea4335"/>
-              <stop offset="100%" stop-color="#fbbc05"/>
-            </linearGradient>
-            <linearGradient id="g4" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#34a853"/>
-              <stop offset="100%" stop-color="#4285f4"/>
-            </linearGradient>
-            <linearGradient id="g5" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#4285f4" stop-opacity="0.6"/>
-              <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.6"/>
-            </linearGradient>
-          </defs>
+      <div class="gem-logo-wrap">
+        <div class="gem-glow"></div>
+        <div class="gem-ring"></div>
+        <svg class="header-google-g" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Google G logo">
+          <path d="M32 10 A22 22 0 0 1 54 32" stroke="#EA4335" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M54 32 A22 22 0 0 1 32 54" stroke="#4285F4" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <line x1="32" y1="32" x2="54" y2="32" stroke="#4285F4" stroke-width="10" stroke-linecap="round"/>
+          <path d="M32 54 A22 22 0 0 1 10 32" stroke="#34A853" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M10 32 A22 22 0 0 1 32 10" stroke="#FBBC05" stroke-width="10" stroke-linecap="round" fill="none"/>
         </svg>
       </div>
       <div>
-        <div class="logo-text"><span>Gemini</span> Chat</div>
+        <div class="logo-text">
+          <span class="g">G</span><span class="e1">e</span><span class="m">m</span><span class="i">i</span><span class="n">n</span><span class="i2">i</span>
+        </div>
+        <div class="logo-sub">AI Chat</div>
       </div>
-      <div class="model-badge">models/gemma-3-1b-it</div>
+      <div class="model-chip">
+        <div class="model-chip-dot"></div>
+        gemma-3-1b-it
+      </div>
     </div>
     <div class="header-right">
-      <div class="status-dot" id="statusDot"></div>
-      <span class="status-text" id="statusText">Ready</span>
+      <div class="status-pill">
+        <div class="status-led" id="statusLed"></div>
+        <span class="status-label" id="statusText">Ready</span>
+      </div>
     </div>
   </header>
 
   <!-- Setup Screen -->
   <div id="setup-screen">
     <div class="setup-card">
-      <div class="setup-gem">
-        <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="36,4 68,24 68,48 36,68 4,48 4,24" fill="none" stroke="url(#sg1)" stroke-width="2"/>
-          <polygon points="36,4 54,24 36,36 18,24" fill="url(#sg2)" opacity="0.9"/>
-          <polygon points="54,24 68,48 36,68 36,36" fill="url(#sg3)" opacity="0.7"/>
-          <polygon points="18,24 36,36 36,68 4,48" fill="url(#sg4)" opacity="0.8"/>
-          <polygon points="18,24 54,24 36,36" fill="url(#sg5)" opacity="0.95"/>
-          <defs>
-            <linearGradient id="sg1" x1="0" y1="0" x2="72" y2="72">
-              <stop offset="0%" stop-color="#4285f4"/>
-              <stop offset="50%" stop-color="#8b5cf6"/>
-              <stop offset="100%" stop-color="#34a853"/>
-            </linearGradient>
-            <linearGradient id="sg2" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#4285f4"/>
-              <stop offset="100%" stop-color="#a78bfa"/>
-            </linearGradient>
-            <linearGradient id="sg3" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#ea4335"/>
-              <stop offset="100%" stop-color="#fbbc05"/>
-            </linearGradient>
-            <linearGradient id="sg4" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#34a853"/>
-              <stop offset="100%" stop-color="#4285f4"/>
-            </linearGradient>
-            <linearGradient id="sg5" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#4285f4" stop-opacity="0.5"/>
-              <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.5"/>
-            </linearGradient>
-          </defs>
-        </svg>
+      <div class="setup-gem-wrap">
+        <div class="setup-gem-orbit-2"></div>
+        <div class="setup-gem-orbit"></div>
+        <div class="setup-gem-glow"></div>
+        <canvas id="setupGem" width="100" height="100" style="display:block;width:100%;height:100%;"></canvas>
+        <!-- Google G logo SVG centered inside the ring -->
+        <div class="google-g-wrap">
+          <svg class="google-g-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Red arc (top) -->
+            <path d="M32 10 A22 22 0 0 1 54 32" stroke="#EA4335" stroke-width="10" stroke-linecap="round" fill="none"/>
+            <!-- Blue arc (right + inner bar) -->
+            <path d="M54 32 A22 22 0 0 1 32 54" stroke="#4285F4" stroke-width="10" stroke-linecap="round" fill="none"/>
+            <!-- Blue horizontal inner bar -->
+            <line x1="32" y1="32" x2="54" y2="32" stroke="#4285F4" stroke-width="10" stroke-linecap="round"/>
+            <!-- Green arc (bottom-left) -->
+            <path d="M32 54 A22 22 0 0 1 10 32" stroke="#34A853" stroke-width="10" stroke-linecap="round" fill="none"/>
+            <!-- Yellow arc (left-top) -->
+            <path d="M10 32 A22 22 0 0 1 32 10" stroke="#FBBC05" stroke-width="10" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
       </div>
       <div class="setup-title">Talk to Gemini</div>
-      <div class="setup-subtitle">Enter your Google AI Studio API key to start chatting with Gemma 3 1B IT — Google's compact instruction-tuned model.</div>
+      <div class="setup-subtitle">Enter your Google AI Studio API key to begin a conversation with Gemma 3 — Google's compact instruction-tuned model.</div>
       <div class="input-group">
-        <label>Google AI API Key</label>
-        <input class="key-input" type="password" id="apiKeyInput" placeholder="AIza...">
+        <label>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/><path d="M5 3v3M5 7.5v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Google AI API Key
+        </label>
+        <input class="key-input" type="password" id="apiKeyInput" placeholder="AIza•••••••••••••••••••">
       </div>
-      <button class="btn-start" onclick="startChat()">✦ Launch Chat</button>
+      <button class="btn-start" onclick="startChat()">
+        <div class="btn-start-inner">
+          <svg class="btn-icon" viewBox="0 0 18 18" fill="none">
+            <polygon points="9,1 17,5 17,13 9,17 1,13 1,5" fill="none" stroke="white" stroke-width="1.2"/>
+            <polygon points="9,1 13,5 9,9 5,5" fill="rgba(255,255,255,0.6)"/>
+            <polygon points="13,5 17,13 9,17 9,9" fill="rgba(255,255,255,0.4)"/>
+            <polygon points="5,5 9,9 9,17 1,13" fill="rgba(255,255,255,0.5)"/>
+            <polygon points="5,5 13,5 9,9" fill="rgba(255,255,255,0.8)"/>
+          </svg>
+          Launch Chat
+        </div>
+      </button>
       <div class="setup-hint">
         Get a free API key at <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a><br>
-        Your key stays local — never sent to our servers.
+        Your key is stored locally — never sent to any server.
       </div>
     </div>
   </div>
@@ -810,61 +1152,35 @@
   <div id="chat-screen">
     <div id="messages">
       <div class="welcome-state" id="welcomeState">
-        <div class="welcome-icon">
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="40,4 76,24 76,56 40,76 4,56 4,24" fill="none" stroke="url(#wg1)" stroke-width="1.5" stroke-dasharray="4 2"/>
-            <polygon points="40,4 60,24 40,40 20,24" fill="url(#wg2)" opacity="0.8"/>
-            <polygon points="60,24 76,56 40,76 40,40" fill="url(#wg3)" opacity="0.6"/>
-            <polygon points="20,24 40,40 40,76 4,56" fill="url(#wg4)" opacity="0.7"/>
-            <polygon points="20,24 60,24 40,40" fill="url(#wg5)" opacity="0.9"/>
-            <defs>
-              <linearGradient id="wg1" x1="0" y1="0" x2="80" y2="80">
-                <stop offset="0%" stop-color="#4285f4"/>
-                <stop offset="100%" stop-color="#34a853"/>
-              </linearGradient>
-              <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#4285f4"/>
-                <stop offset="100%" stop-color="#a78bfa"/>
-              </linearGradient>
-              <linearGradient id="wg3" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#ea4335"/>
-                <stop offset="100%" stop-color="#fbbc05"/>
-              </linearGradient>
-              <linearGradient id="wg4" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#34a853"/>
-                <stop offset="100%" stop-color="#4285f4"/>
-              </linearGradient>
-              <linearGradient id="wg5" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#4285f4" stop-opacity="0.4"/>
-                <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.4"/>
-              </linearGradient>
-            </defs>
-          </svg>
+        <div class="welcome-gem-wrap" id="welcomeGemWrap">
+          <div class="welcome-ring-outer"></div>
+          <div class="welcome-ring-mid"></div>
+          <div class="welcome-gem-glow"></div>
+          <canvas id="welcomeGem" width="110" height="110" style="display:block;width:100%;height:100%;position:relative;z-index:1;"></canvas>
         </div>
         <div class="welcome-title">Hello, I'm Gemini</div>
-        <div class="welcome-subtitle">Powered by Google's most capable AI model.<br>Ask me anything — I'm ready to help.</div>
+        <div class="welcome-subtitle">Google's most capable AI — ready to help with anything.<br>Ask a question or choose a topic below.</div>
         <div class="suggestions">
           <div class="suggestion-card" onclick="sendSuggestion('Explain quantum computing in simple terms')">
-            <div class="suggestion-icon">⚛️</div>
+            <span class="suggestion-icon">⚛️</span>
             <div class="suggestion-text">Explain quantum computing in simple terms</div>
           </div>
-          <div class="suggestion-card" onclick="sendSuggestion('Write a Python function to sort a list of dictionaries')">
-            <div class="suggestion-icon">🐍</div>
+          <div class="suggestion-card" onclick="sendSuggestion('Write a Python function to sort a list of dictionaries by a key')">
+            <span class="suggestion-icon">🐍</span>
             <div class="suggestion-text">Write a Python function to sort a list of dictionaries</div>
           </div>
           <div class="suggestion-card" onclick="sendSuggestion('What are the top 5 productivity tips for developers?')">
-            <div class="suggestion-icon">🚀</div>
+            <span class="suggestion-icon">🚀</span>
             <div class="suggestion-text">Top 5 productivity tips for developers</div>
           </div>
-          <div class="suggestion-card" onclick="sendSuggestion('Write a haiku about artificial intelligence')">
-            <div class="suggestion-icon">✍️</div>
-            <div class="suggestion-text">Write a haiku about artificial intelligence</div>
+          <div class="suggestion-card" onclick="sendSuggestion('Write a short poem about the beauty of mathematics')">
+            <span class="suggestion-icon">✨</span>
+            <div class="suggestion-text">Write a poem about the beauty of mathematics</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Scroll to bottom -->
     <button class="scroll-btn" id="scrollBtn" onclick="scrollToBottom()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 5v14M5 12l7 7 7-7"/>
@@ -874,7 +1190,7 @@
     <div class="input-area">
       <div class="input-container">
         <div class="input-box">
-          <textarea id="chat-input" placeholder="Ask Gemini anything..." rows="1" oninput="onInput(this)" onkeydown="handleKey(event)"></textarea>
+          <textarea id="chat-input" placeholder="Ask Gemini anything…" rows="1" oninput="onInput(this)" onkeydown="handleKey(event)"></textarea>
           <button class="send-btn" id="sendBtn" onclick="sendMessage()">
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -882,8 +1198,11 @@
           </button>
         </div>
         <div class="input-footer">
-          <span class="input-hint">Enter to send · Shift+Enter for new line</span>
-          <button class="clear-btn" onclick="clearChat()">Clear chat</button>
+          <span class="input-hint">↵ send · ⇧↵ newline</span>
+          <div class="footer-right">
+            <span class="token-count" id="tokenCount"></span>
+            <button class="clear-btn" onclick="clearChat()">Clear</button>
+          </div>
         </div>
       </div>
     </div>
@@ -892,30 +1211,236 @@
   <div class="toast" id="toast"></div>
 
 <script>
+/* Setup screen background glow canvas (soft pulse behind G logo) */
+class SetupGlowCanvas {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.size = 100;
+    this.t = 0;
+    this.animate = this.animate.bind(this);
+    this.rafId = requestAnimationFrame(this.animate);
+  }
+  animate(ts) {
+    this.t = ts / 1000;
+    const ctx = this.ctx, s = this.size, cx = 50, cy = 50;
+    ctx.clearRect(0, 0, s, s);
+    const hue = (this.t * 25) % 360;
+    const pulse = 0.5 + 0.5 * Math.sin(this.t * 1.5);
+    const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 44);
+    grd.addColorStop(0,   `hsla(${hue}, 80%, 65%, ${0.18 + 0.1 * pulse})`);
+    grd.addColorStop(0.5, `hsla(${(hue+90)%360}, 75%, 55%, ${0.08 + 0.05 * pulse})`);
+    grd.addColorStop(1,   'transparent');
+    ctx.beginPath();
+    ctx.arc(cx, cy, 44, 0, Math.PI * 2);
+    ctx.fillStyle = grd;
+    ctx.fill();
+    this.rafId = requestAnimationFrame(this.animate);
+  }
+  destroy() { if (this.rafId) cancelAnimationFrame(this.rafId); }
+}
+
+class AnimatedGem {
+  constructor(canvas, size = 44) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.size = size;
+    this.cx = size / 2;
+    this.cy = size / 2;
+    this.t = 0;
+    this.hue = 0;
+    this.rafId = null;
+    this.facets = this.buildFacets();
+    this.animate = this.animate.bind(this);
+    this.rafId = requestAnimationFrame(this.animate);
+  }
+
+  buildFacets() {
+    const s = this.size, cx = this.cx, cy = this.cy;
+    const top = [cx, s * 0.08];
+    const bl = [cx - s * 0.42, cy];
+    const br = [cx + s * 0.42, cy];
+    const ml = [cx - s * 0.22, cy * 0.58];
+    const mr = [cx + s * 0.22, cy * 0.58];
+    const bot = [cx, s * 0.92];
+    return [
+      { pts: [top, mr, cx, ml], role: 'top-left', hueOffset: 0 },
+      { pts: [top, mr, cx], role: 'top-right', hueOffset: 60 },
+      { pts: [mr, br, bot, cx], role: 'right', hueOffset: 120 },
+      { pts: [ml, cx, bot, bl], role: 'left', hueOffset: 200 },
+      { pts: [ml, mr, cx], role: 'center', hueOffset: 300 }
+    ];
+  }
+
+  animate(ts) {
+    this.t = ts / 1000;
+    this.hue = (this.t * 30) % 360;
+    this.draw();
+    this.rafId = requestAnimationFrame(this.animate);
+  }
+
+  draw() {
+    const ctx = this.ctx, s = this.size;
+    ctx.clearRect(0, 0, s, s);
+    const cx = this.cx, cy = this.cy;
+    const t = this.t;
+
+    // Floating bob
+    const bobY = Math.sin(t * 1.2) * 1.5;
+
+    ctx.save();
+    ctx.translate(0, bobY);
+
+    const pts = this.facets;
+
+    // Draw facets
+    const facetDefs = [
+      // top-left
+      { poly: [[cx, s*0.08], [cx-s*0.22, cy*0.58], [cx, cy*0.55], [cx+s*0.22, cy*0.58]], h: (this.hue+0)%360, l: 60, a: 0.85 },
+      // top-right — same poly but different shade
+      { poly: [[cx, s*0.08], [cx+s*0.22, cy*0.58], [cx+s*0.42, cy]], h: (this.hue+60)%360, l: 55, a: 0.75 },
+      // top-left facet
+      { poly: [[cx, s*0.08], [cx-s*0.42, cy], [cx-s*0.22, cy*0.58]], h: (this.hue+120)%360, l: 50, a: 0.80 },
+      // right-bottom
+      { poly: [[cx+s*0.22, cy*0.58], [cx+s*0.42, cy], [cx, s*0.92]], h: (this.hue+180)%360, l: 45, a: 0.7 },
+      // left-bottom
+      { poly: [[cx-s*0.22, cy*0.58], [cx, s*0.92], [cx-s*0.42, cy]], h: (this.hue+240)%360, l: 48, a: 0.72 },
+      // center highlight
+      { poly: [[cx-s*0.22, cy*0.58], [cx+s*0.22, cy*0.58], [cx, cy*0.55]], h: (this.hue+300)%360, l: 80, a: 0.5 },
+    ];
+
+    for (const f of facetDefs) {
+      const brightness = 0.85 + 0.15 * Math.sin(t * 2 + f.h * 0.05);
+      ctx.beginPath();
+      ctx.moveTo(f.poly[0][0], f.poly[0][1]);
+      for (let i = 1; i < f.poly.length; i++) ctx.lineTo(f.poly[i][0], f.poly[i][1]);
+      ctx.closePath();
+      ctx.fillStyle = `hsla(${f.h}, 85%, ${f.l * brightness}%, ${f.a})`;
+      ctx.fill();
+    }
+
+    // Outline
+    const outerPoly = [
+      [cx, s*0.08], [cx+s*0.42, cy], [cx, s*0.92], [cx-s*0.42, cy]
+    ];
+    ctx.beginPath();
+    ctx.moveTo(outerPoly[0][0], outerPoly[0][1]);
+    for (let i = 1; i < outerPoly.length; i++) ctx.lineTo(outerPoly[i][0], outerPoly[i][1]);
+    ctx.closePath();
+
+    const grad = ctx.createLinearGradient(0, 0, s, s);
+    grad.addColorStop(0, `hsla(${this.hue}, 90%, 70%, 0.8)`);
+    grad.addColorStop(0.5, `hsla(${(this.hue+120)%360}, 90%, 65%, 0.6)`);
+    grad.addColorStop(1, `hsla(${(this.hue+240)%360}, 90%, 60%, 0.7)`);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    // Inner lines
+    const innerLines = [
+      [[cx, s*0.08], [cx, cy*0.55]],
+      [[cx-s*0.42, cy], [cx, cy*0.55]],
+      [[cx+s*0.42, cy], [cx, cy*0.55]],
+      [[cx, s*0.92], [cx, cy*0.55]],
+      [[cx-s*0.22, cy*0.58], [cx+s*0.22, cy*0.58]],
+    ];
+    ctx.strokeStyle = `hsla(${this.hue}, 70%, 80%, 0.25)`;
+    ctx.lineWidth = 0.6;
+    for (const [a, b] of innerLines) {
+      ctx.beginPath();
+      ctx.moveTo(a[0], a[1]);
+      ctx.lineTo(b[0], b[1]);
+      ctx.stroke();
+    }
+
+    // Sparkle in center
+    const sparkleAlpha = 0.3 + 0.7 * Math.abs(Math.sin(t * 3));
+    const grd = ctx.createRadialGradient(cx, cy*0.55, 0, cx, cy*0.55, s*0.1);
+    grd.addColorStop(0, `rgba(255,255,255,${sparkleAlpha * 0.6})`);
+    grd.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(cx, cy*0.55, s*0.1, 0, Math.PI*2);
+    ctx.fillStyle = grd;
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  destroy() {
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+  }
+}
+
+/* ═══════════════════════════════════════
+   STARFIELD
+   ═══════════════════════════════════════ */
+function createStars() {
+  const sf = document.getElementById('starfield');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2 + 0.5;
+    star.style.cssText = `
+      width: ${size}px; height: ${size}px;
+      top: ${Math.random() * 100}%;
+      left: ${Math.random() * 100}%;
+      --dur: ${3 + Math.random() * 8}s;
+      --brightness: ${0.2 + Math.random() * 0.7};
+      animation-delay: ${-Math.random() * 8}s;
+    `;
+    sf.appendChild(star);
+  }
+}
+
+createStars();
+
+/* ═══════════════════════════════════════
+   INIT GEMS
+   ═══════════════════════════════════════ */
+const headerGemEl = document.getElementById('headerGem');
+const headerGemAnim = headerGemEl ? new AnimatedGem(headerGemEl, 44) : null;
+const setupGemAnim  = new SetupGlowCanvas(document.getElementById('setupGem'));
+
+/* ═══════════════════════════════════════
+   CHAT LOGIC
+   ═══════════════════════════════════════ */
 let apiKey = '';
 let chatHistory = [];
 let isLoading = false;
+let welcomeGemAnim = null;
+
+function initWelcomeGem() {
+  const c = document.getElementById('welcomeGem');
+  if (c) {
+    if (welcomeGemAnim) welcomeGemAnim.destroy();
+    welcomeGemAnim = new AnimatedGem(c, 110);
+  }
+}
+initWelcomeGem();
 
 function startChat() {
   const key = document.getElementById('apiKeyInput').value.trim();
   if (!key) { showToast('Please enter your API key'); return; }
   apiKey = key;
+  setupGemAnim.destroy();
   document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('chat-screen').classList.add('active');
+  initWelcomeGem();
 }
 
 function onInput(el) {
   el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  el.style.height = Math.min(el.scrollHeight, 150) + 'px';
   const sendBtn = document.getElementById('sendBtn');
   sendBtn.classList.toggle('active', el.value.trim().length > 0);
+  const chars = el.value.length;
+  const tc = document.getElementById('tokenCount');
+  if (chars > 0) tc.textContent = `~${Math.ceil(chars/4)} tokens`;
+  else tc.textContent = '';
 }
 
 function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
 function sendSuggestion(text) {
@@ -925,36 +1450,9 @@ function sendSuggestion(text) {
   sendMessage();
 }
 
-function geminiAvatar() {
-  return `<svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="15,1 27,8 27,22 15,29 3,22 3,8" fill="none" stroke="url(#av1)" stroke-width="1"/>
-    <polygon points="15,1 22,8 15,15 8,8" fill="url(#av2)" opacity="0.9"/>
-    <polygon points="22,8 27,22 15,29 15,15" fill="url(#av3)" opacity="0.7"/>
-    <polygon points="8,8 15,15 15,29 3,22" fill="url(#av4)" opacity="0.8"/>
-    <polygon points="8,8 22,8 15,15" fill="url(#av5)" opacity="0.95"/>
-    <defs>
-      <linearGradient id="av1" x1="0" y1="0" x2="30" y2="30">
-        <stop offset="0%" stop-color="#4285f4"/>
-        <stop offset="100%" stop-color="#34a853"/>
-      </linearGradient>
-      <linearGradient id="av2" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#4285f4"/>
-        <stop offset="100%" stop-color="#a78bfa"/>
-      </linearGradient>
-      <linearGradient id="av3" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#ea4335"/>
-        <stop offset="100%" stop-color="#fbbc05"/>
-      </linearGradient>
-      <linearGradient id="av4" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#34a853"/>
-        <stop offset="100%" stop-color="#4285f4"/>
-      </linearGradient>
-      <linearGradient id="av5" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#4285f4" stop-opacity="0.5"/>
-        <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.5"/>
-      </linearGradient>
-    </defs>
-  </svg>`;
+function aiAvatarHTML() {
+  const id = 'gem-' + Math.random().toString(36).slice(2,7);
+  return { html: `<canvas id="${id}" width="28" height="28" style="display:block;width:28px;height:28px;"></canvas>`, id };
 }
 
 function addMessage(role, content, isTyping = false) {
@@ -964,48 +1462,82 @@ function addMessage(role, content, isTyping = false) {
   const messagesDiv = document.getElementById('messages');
   const wrapper = document.createElement('div');
   wrapper.className = 'message-wrapper';
-
   if (isTyping) wrapper.id = 'typing-msg';
 
   const isUser = role === 'user';
+  const msgId = 'msg-' + Math.random().toString(36).slice(2,9);
+
+  let avatarHTML;
+  let gemId = null;
+  if (isUser) {
+    avatarHTML = `<div class="avatar avatar-user">U</div>`;
+  } else {
+    const av = aiAvatarHTML();
+    gemId = av.id;
+    avatarHTML = `<div class="avatar avatar-ai">${av.html}</div>`;
+  }
+
   wrapper.innerHTML = `
     <div class="message">
-      <div class="avatar ${isUser ? 'avatar-user' : 'avatar-ai'}">
-        ${isUser ? 'U' : geminiAvatar()}
-      </div>
+      ${avatarHTML}
       <div class="bubble ${isUser ? 'bubble-user' : 'bubble-ai'}">
-        <div class="bubble-label">${isUser ? 'You' : 'Gemini'}</div>
-        ${isTyping ? `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>` : formatContent(content)}
+        <div class="bubble-label">
+          <div class="label-dot"></div>
+          ${isUser ? 'You' : 'Gemini'}
+        </div>
+        <div id="${msgId}">
+          ${isTyping
+            ? `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`
+            : formatContent(content)}
+        </div>
+        ${!isTyping && !isUser ? `
+          <div class="msg-actions">
+            <button class="msg-action-btn" onclick="copyText(this)">Copy</button>
+            <button class="msg-action-btn" onclick="retryLast()">Retry</button>
+          </div>` : ''}
       </div>
     </div>
   `;
 
   messagesDiv.appendChild(wrapper);
   scrollToBottom();
-  return wrapper;
+
+  // Start mini gem animation for AI messages
+  if (gemId) {
+    setTimeout(() => {
+      const c = document.getElementById(gemId);
+      if (c) new AnimatedGem(c, 28);
+    }, 10);
+  }
+
+  return { wrapper, msgId };
 }
 
 function formatContent(text) {
-  // Basic markdown-like formatting
+  // Code blocks
+  text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) =>
+    `<pre><code>${escHtml(code.trim())}</code></pre>`);
   text = text
-    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/^### (.+)$/gm, '<h3 style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin:12px 0 6px;color:#f0f0f8;">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 style="font-family:Syne,sans-serif;font-size:16px;font-weight:700;margin:14px 0 8px;color:#f0f0f8;">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;margin:16px 0 10px;color:#f0f0f8;">$1</h1>');
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:13.5px;font-weight:700;margin:14px 0 6px;color:#c4b9ff;letter-spacing:-0.3px;">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-size:15px;font-weight:700;margin:16px 0 8px;color:#eeeeff;letter-spacing:-0.4px;">$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1 style="font-size:17px;font-weight:700;margin:18px 0 10px;color:#eeeeff;letter-spacing:-0.5px;">$1</h1>');
 
-  // Handle lists
-  text = text.replace(/^[\*\-] (.+)$/gm, '<li style="margin:4px 0;padding-left:4px;">$1</li>');
-  text = text.replace(/(<li.*<\/li>\n?)+/g, m => `<ul style="padding-left:20px;margin:8px 0;">${m}</ul>`);
+  text = text.replace(/^[\*\-] (.+)$/gm, '<li style="margin:5px 0;padding-left:4px;color:#c8c8e8;">$1</li>');
+  text = text.replace(/(<li[^>]*>.*<\/li>\n?)+/g, m =>
+    `<ul style="padding-left:20px;margin:10px 0;list-style:none;">${m}</ul>`);
 
-  // Paragraphs
   const parts = text.split(/\n\n+/);
   return parts.map(p => {
-    if (p.startsWith('<') && !p.startsWith('<code')) return p;
+    if (p.match(/^<(h[1-3]|ul|pre|li)/)) return p;
     return `<p>${p.replace(/\n/g, '<br>')}</p>`;
   }).join('');
+}
+
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 async function sendMessage() {
@@ -1017,14 +1549,15 @@ async function sendMessage() {
   input.value = '';
   input.style.height = 'auto';
   document.getElementById('sendBtn').classList.remove('active');
+  document.getElementById('tokenCount').textContent = '';
 
   addMessage('user', text);
   chatHistory.push({ role: 'user', parts: [{ text }] });
 
   isLoading = true;
-  setStatus('Thinking...', '#fbbc05');
+  setStatus('Thinking…', '#f7c94f', true);
 
-  const typingEl = addMessage('ai', '', true);
+  const { wrapper: typingWrapper } = addMessage('ai', '', true);
 
   try {
     const response = await fetch(
@@ -1044,28 +1577,52 @@ async function sendMessage() {
     const data = await response.json();
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
 
-    typingEl.remove();
+    typingWrapper.remove();
     addMessage('ai', reply);
-
     chatHistory.push({ role: 'model', parts: [{ text: reply }] });
-    setStatus('Ready', '#34a853');
+    setStatus('Ready', '#4ff7a0', false);
 
   } catch (err) {
-    typingEl.remove();
-    addMessage('ai', `⚠️ Error: ${err.message}`);
+    typingWrapper.remove();
+    addMessage('ai', `⚠️ **Error:** ${err.message}`);
     showToast(err.message);
-    setStatus('Error', '#ea4335');
-    setTimeout(() => setStatus('Ready', '#34a853'), 3000);
+    setStatus('Error', '#f75f4f', false);
+    setTimeout(() => setStatus('Ready', '#4ff7a0', false), 4000);
   }
 
   isLoading = false;
 }
 
-function setStatus(text, color) {
+function setStatus(text, color, thinking) {
   document.getElementById('statusText').textContent = text;
-  const dot = document.getElementById('statusDot');
-  dot.style.background = color;
-  dot.style.boxShadow = `0 0 8px ${color}`;
+  const led = document.getElementById('statusLed');
+  led.style.background = color;
+  led.style.boxShadow = `0 0 10px ${color}`;
+  led.style.animation = thinking
+    ? 'ledPulse 0.6s ease-in-out infinite'
+    : 'ledPulse 2s ease-in-out infinite';
+}
+
+function copyText(btn) {
+  const bubble = btn.closest('.bubble');
+  const text = bubble.querySelector('[id^="msg-"]')?.innerText || '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+let lastUserMsg = '';
+function retryLast() {
+  const lastUser = [...chatHistory].reverse().find(m => m.role === 'user');
+  if (lastUser) {
+    chatHistory.pop(); // remove last model response
+    chatHistory.pop(); // remove last user message
+    const input = document.getElementById('chat-input');
+    input.value = lastUser.parts[0].text;
+    onInput(input);
+    sendMessage();
+  }
 }
 
 function clearChat() {
@@ -1073,78 +1630,54 @@ function clearChat() {
   const messages = document.getElementById('messages');
   messages.innerHTML = `
     <div class="welcome-state" id="welcomeState">
-      <div class="welcome-icon">
-        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="40,4 76,24 76,56 40,76 4,56 4,24" fill="none" stroke="url(#wg1)" stroke-width="1.5" stroke-dasharray="4 2"/>
-          <polygon points="40,4 60,24 40,40 20,24" fill="url(#wg2)" opacity="0.8"/>
-          <polygon points="60,24 76,56 40,76 40,40" fill="url(#wg3)" opacity="0.6"/>
-          <polygon points="20,24 40,40 40,76 4,56" fill="url(#wg4)" opacity="0.7"/>
-          <polygon points="20,24 60,24 40,40" fill="url(#wg5)" opacity="0.9"/>
-          <defs>
-            <linearGradient id="wg1" x1="0" y1="0" x2="80" y2="80">
-              <stop offset="0%" stop-color="#4285f4"/><stop offset="100%" stop-color="#34a853"/>
-            </linearGradient>
-            <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#4285f4"/><stop offset="100%" stop-color="#a78bfa"/>
-            </linearGradient>
-            <linearGradient id="wg3" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#ea4335"/><stop offset="100%" stop-color="#fbbc05"/>
-            </linearGradient>
-            <linearGradient id="wg4" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#34a853"/><stop offset="100%" stop-color="#4285f4"/>
-            </linearGradient>
-            <linearGradient id="wg5" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#4285f4" stop-opacity="0.4"/><stop offset="100%" stop-color="#a78bfa" stop-opacity="0.4"/>
-            </linearGradient>
-          </defs>
-        </svg>
+      <div class="welcome-gem-wrap">
+        <div class="welcome-ring-outer"></div>
+        <div class="welcome-ring-mid"></div>
+        <div class="welcome-gem-glow"></div>
+        <canvas id="welcomeGem" width="110" height="110" style="display:block;width:100%;height:100%;position:relative;z-index:1;"></canvas>
       </div>
       <div class="welcome-title">Hello, I'm Gemini</div>
-      <div class="welcome-subtitle">Powered by Google's most capable AI model.<br>Ask me anything — I'm ready to help.</div>
+      <div class="welcome-subtitle">Google's most capable AI — ready to help with anything.<br>Ask a question or choose a topic below.</div>
       <div class="suggestions">
-        <div class="suggestion-card" onclick="sendSuggestion('Explain quantum computing in simple terms')">
-          <div class="suggestion-icon">⚛️</div>
-          <div class="suggestion-text">Explain quantum computing in simple terms</div>
-        </div>
-        <div class="suggestion-card" onclick="sendSuggestion('Write a Python function to sort a list of dictionaries')">
-          <div class="suggestion-icon">🐍</div>
-          <div class="suggestion-text">Write a Python function to sort a list of dictionaries</div>
-        </div>
-        <div class="suggestion-card" onclick="sendSuggestion('What are the top 5 productivity tips for developers?')">
-          <div class="suggestion-icon">🚀</div>
-          <div class="suggestion-text">Top 5 productivity tips for developers</div>
-        </div>
-        <div class="suggestion-card" onclick="sendSuggestion('Write a haiku about artificial intelligence')">
-          <div class="suggestion-icon">✍️</div>
-          <div class="suggestion-text">Write a haiku about artificial intelligence</div>
-        </div>
+        <div class="suggestion-card" onclick="sendSuggestion('Explain quantum computing in simple terms')"><span class="suggestion-icon">⚛️</span><div class="suggestion-text">Explain quantum computing in simple terms</div></div>
+        <div class="suggestion-card" onclick="sendSuggestion('Write a Python function to sort a list of dictionaries by a key')"><span class="suggestion-icon">🐍</span><div class="suggestion-text">Write a Python function to sort a list of dictionaries</div></div>
+        <div class="suggestion-card" onclick="sendSuggestion('What are the top 5 productivity tips for developers?')"><span class="suggestion-icon">🚀</span><div class="suggestion-text">Top 5 productivity tips for developers</div></div>
+        <div class="suggestion-card" onclick="sendSuggestion('Write a short poem about the beauty of mathematics')"><span class="suggestion-icon">✨</span><div class="suggestion-text">Write a poem about the beauty of mathematics</div></div>
       </div>
-    </div>
-  `;
+    </div>`;
+  initWelcomeGem();
 }
 
 function scrollToBottom() {
-  const messages = document.getElementById('messages');
-  messages.scrollTop = messages.scrollHeight;
+  const m = document.getElementById('messages');
+  m.scrollTop = m.scrollHeight;
 }
 
 function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3500);
+  const t = document.getElementById('toast');
+  t.textContent = '⚠ ' + msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3800);
 }
 
-// Scroll button visibility
+// Scroll button
 document.getElementById('messages').addEventListener('scroll', function() {
-  const scrollBtn = document.getElementById('scrollBtn');
-  const isScrolledUp = this.scrollHeight - this.scrollTop - this.clientHeight > 100;
-  scrollBtn.classList.toggle('visible', isScrolledUp);
+  const btn = document.getElementById('scrollBtn');
+  btn.classList.toggle('visible', this.scrollHeight - this.scrollTop - this.clientHeight > 120);
 });
 
-// Allow pressing Enter on API key field
+// Enter on API key
 document.getElementById('apiKeyInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') startChat();
+});
+
+// Suggestion card mouse glow
+document.querySelectorAll('.suggestion-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  });
 });
 </script>
 </body>
